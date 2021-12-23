@@ -1,0 +1,35 @@
+name: GitHub Pages Deploy
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+    
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+        
+    - name: Install dependencies
+      run: |
+        npm ci
+        
+    - uses: sterlingwes/gh-pages-deploy-action@v1.1
+      with:
+          access-token: ${{ secrets.ACCESS_TOKEN }}
+          source-directory: dist
+          build-command: npm run build
+
+    
